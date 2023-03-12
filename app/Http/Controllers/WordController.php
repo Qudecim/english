@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\NotEnoughRights;
 use App\Http\Resources\WordCollection;
 use App\Http\Resources\WordResource;
 use App\Models\Word;
@@ -46,6 +47,7 @@ class WordController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * @throws NotEnoughRights
      */
     public function update(Request $request, Word $word): WordResource
     {
@@ -53,6 +55,10 @@ class WordController extends Controller
             'word_1' => 'required|max:255',
             'word_2' => 'required|max:255',
         ]);
+
+        if ($word->user_id !== $request->user()->id) {
+            throw new NotEnoughRights();
+        }
 
         $word->word_1 = $request->word_1;
         $word->word_2 = $request->word_2;
@@ -63,9 +69,14 @@ class WordController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * @throws NotEnoughRights
      */
-    public function destroy(Word $word): WordResource
+    public function destroy(Request $request, Word $word): WordResource
     {
+        if ($word->user_id !== $request->user()->id) {
+            throw new NotEnoughRights();
+        }
+
         return new WordResource($word);
     }
 }
