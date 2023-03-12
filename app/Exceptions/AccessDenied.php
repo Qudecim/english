@@ -3,7 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
-class NotEnoughRights extends Exception
+class AccessDenied extends Exception
 {
 
     /**
