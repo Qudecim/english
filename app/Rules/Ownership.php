@@ -2,18 +2,35 @@
 
 namespace App\Rules;
 
-use Closure;
-use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Validation\Rule;
 
-class Ownership implements ValidationRule
+class Ownership extends Rule
 {
+    protected mixed $model;
+
     /**
-     * Run the validation rule.
-     *
-     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     * @param mixed $model
      */
-    public function validate(string $attribute, mixed $value, Closure $fail): void
+    public function __construct(mixed $model)
     {
-        //
+        $this->model = $model;
+    }
+
+    /**
+     * @param $attribute
+     * @param $object
+     * @return bool
+     */
+    public function passes($attribute, $object): bool
+    {
+        return $object->user_id === auth()->id();
+    }
+
+    /**
+     * @return string
+     */
+    public function message(): string
+    {
+        return 'This object does not belong to you.';
     }
 }
